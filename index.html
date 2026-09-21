@@ -3,1026 +3,165 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Competitividad Territorial — Tolima & Huila 2025</title>
-<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
-<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
-<style>
-  :root {
-    --bg: #0d1117;
-    --bg2: #161b22;
-    --bg3: #21262d;
-    --bg4: #30363d;
-    --border: rgba(255,255,255,0.08);
-    --border2: rgba(255,255,255,0.14);
-    --text: #e6edf3;
-    --text2: #8b949e;
-    --text3: #484f58;
-    --tolima: #3fb950;
-    --tolima2: rgba(63,185,80,0.12);
-    --huila: #f0883e;
-    --huila2: rgba(240,136,62,0.12);
-    --accent: #58a6ff;
-    --accent2: rgba(88,166,255,0.12);
-    --red: #f85149;
-    --red2: rgba(248,81,73,0.1);
-    --yellow: #e3b341;
-    --yellow2: rgba(227,179,65,0.1);
-    --purple: #bc8cff;
-    --r: 8px;
-    --r2: 12px;
-    --shadow: 0 1px 3px rgba(0,0,0,0.4);
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body {
-    font-family: 'DM Sans', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    font-size: 14px;
-    line-height: 1.6;
-    min-height: 100vh;
-  }
-  /* TOP NAV */
-  .topbar {
-    background: var(--bg2);
-    border-bottom: 1px solid var(--border);
-    padding: 0 2rem;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    height: 56px;
-    position: sticky;
-    top: 0;
-    z-index: 100;
-  }
-  .topbar-brand {
-    display: flex;
-    align-items: center;
-    gap: 10px;
-  }
-  .brand-icon {
-    width: 28px; height: 28px;
-    background: linear-gradient(135deg, var(--tolima), var(--accent));
-    border-radius: 6px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 14px;
-  }
-  .brand-name { font-size: 15px; font-weight: 600; }
-  .brand-sub { font-size: 12px; color: var(--text2); }
-  .topbar-meta { display: flex; align-items: center; gap: 12px; }
-  .tag {
-    font-size: 11px; font-weight: 500;
-    padding: 3px 9px; border-radius: 20px;
-    border: 1px solid;
-  }
-  .tag-green { color: var(--tolima); border-color: rgba(63,185,80,0.3); background: var(--tolima2); }
-  .tag-orange { color: var(--huila); border-color: rgba(240,136,62,0.3); background: var(--huila2); }
-  .tag-blue { color: var(--accent); border-color: rgba(88,166,255,0.3); background: var(--accent2); }
-  .tag-gray { color: var(--text2); border-color: var(--border2); background: transparent; }
-  /* MAIN LAYOUT */
-  .container { max-width: 1280px; margin: 0 auto; padding: 2rem; }
-  /* HERO */
-  .hero { margin-bottom: 2rem; }
-  .hero-title { font-size: 26px; font-weight: 600; margin-bottom: 6px; }
-  .hero-sub { font-size: 14px; color: var(--text2); }
-  .hero-sub span { color: var(--text); font-weight: 500; }
-  /* FILTERS */
-  .filters {
-    display: flex; align-items: center; gap: 8px;
-    flex-wrap: wrap; margin-bottom: 1.5rem;
-  }
-  .filter-label { font-size: 12px; color: var(--text2); margin-right: 4px; }
-  .pill {
-    font-size: 12px; font-weight: 500;
-    padding: 5px 14px; border-radius: 20px;
-    border: 1px solid var(--border2);
-    background: transparent; color: var(--text2);
-    cursor: pointer; transition: all .15s;
-  }
-  .pill:hover { border-color: var(--border2); color: var(--text); }
-  .pill.active-t { background: var(--tolima2); color: var(--tolima); border-color: rgba(63,185,80,.35); }
-  .pill.active-h { background: var(--huila2); color: var(--huila); border-color: rgba(240,136,62,.35); }
-  .pill.active-a { background: var(--accent2); color: var(--accent); border-color: rgba(88,166,255,.35); }
-  /* KPI ROW */
-  .kpi-grid { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 12px; margin-bottom: 1.5rem; }
-  .kpi-card {
-    background: var(--bg2); border: 1px solid var(--border);
-    border-radius: var(--r2); padding: 1rem 1.25rem;
-    transition: border-color .15s;
-  }
-  .kpi-card:hover { border-color: var(--border2); }
-  .kpi-label { font-size: 11px; color: var(--text2); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 6px; }
-  .kpi-value { font-size: 28px; font-weight: 600; line-height: 1; margin-bottom: 4px; }
-  .kpi-sub { font-size: 12px; color: var(--text2); }
-  .kpi-delta { font-size: 12px; margin-top: 4px; display: flex; align-items: center; gap: 4px; }
-  .up { color: var(--tolima); }
-  .dn { color: var(--red); }
-  .eq { color: var(--yellow); }
-  .kv-tolima { color: var(--tolima); }
-  .kv-huila { color: var(--huila); }
-  .kv-accent { color: var(--accent); }
-  /* TABS */
-  .tabs { display: flex; border-bottom: 1px solid var(--border); margin-bottom: 1.5rem; overflow-x: auto; }
-  .tab {
-    font-size: 13px; font-weight: 500; padding: 10px 18px;
-    color: var(--text2); cursor: pointer; border-bottom: 2px solid transparent;
-    white-space: nowrap; transition: all .15s;
-  }
-  .tab:hover { color: var(--text); }
-  .tab.active { color: var(--accent); border-bottom-color: var(--accent); }
-  .tab-panel { display: none; }
-  .tab-panel.active { display: block; }
-  /* CARDS */
-  .card {
-    background: var(--bg2); border: 1px solid var(--border);
-    border-radius: var(--r2); padding: 1.25rem;
-    margin-bottom: 1.25rem;
-  }
-  .card-title { font-size: 13px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 1rem; }
-  .grid2 { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 1.25rem; }
-  .grid3 { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 12px; }
-  /* BAR ROWS */
-  .bar-row { display: flex; align-items: center; gap: 10px; margin-bottom: 9px; }
-  .bar-row:last-child { margin-bottom: 0; }
-  .bl { font-size: 12px; color: var(--text2); width: 145px; flex-shrink: 0; text-align: right; }
-  .bl.hl { color: var(--text); font-weight: 500; }
-  .bw { flex: 1; background: var(--bg3); border-radius: 4px; height: 18px; overflow: hidden; }
-  .bf { height: 100%; border-radius: 4px; transition: width .6s ease; }
-  .bv { font-size: 12px; color: var(--text2); width: 40px; flex-shrink: 0; font-family: 'DM Mono', monospace; }
-  .bv.hl { color: var(--text); font-weight: 500; }
-  /* PILAR GRID */
-  .pilar-grid { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 10px; }
-  .pilar-item {
-    background: var(--bg3); border: 1px solid var(--border);
-    border-radius: var(--r); padding: .85rem 1rem;
-  }
-  .pilar-name { font-size: 12px; color: var(--text2); margin-bottom: 8px; }
-  .mini-row { display: flex; align-items: center; gap: 6px; margin-bottom: 4px; }
-  .mini-row:last-child { margin-bottom: 0; }
-  .mini-lbl { font-size: 11px; width: 46px; flex-shrink: 0; font-weight: 500; }
-  .mini-w { flex: 1; background: var(--bg4); border-radius: 3px; height: 8px; overflow: hidden; }
-  .mini-f { height: 100%; border-radius: 3px; }
-  .mini-v { font-size: 10px; color: var(--text2); width: 62px; flex-shrink: 0; font-family: 'DM Mono', monospace; }
-  /* INSIGHT BOXES */
-  .insight { border-left: 3px solid; border-radius: 0 var(--r) var(--r) 0; padding: .85rem 1rem; margin-bottom: .75rem; }
-  .insight:last-child { margin-bottom: 0; }
-  .insight-ok { border-color: var(--tolima); background: var(--tolima2); }
-  .insight-warn { border-color: var(--yellow); background: var(--yellow2); }
-  .insight-danger { border-color: var(--red); background: var(--red2); }
-  .insight-info { border-color: var(--accent); background: var(--accent2); }
-  .insight-title { font-size: 13px; font-weight: 600; margin-bottom: 3px; }
-  .insight-txt { font-size: 12px; color: var(--text2); line-height: 1.6; }
-  /* SECTION HEADING */
-  .sec-head { font-size: 12px; font-weight: 600; color: var(--text2); text-transform: uppercase; letter-spacing: .08em; margin-bottom: .75rem; margin-top: 1.25rem; }
-  .sec-head:first-child { margin-top: 0; }
-  /* SOURCE */
-  .src { font-size: 11px; color: var(--text3); margin-top: .75rem; border-top: 1px solid var(--border); padding-top: .6rem; line-height: 1.7; }
-  .src a { color: var(--accent); text-decoration: none; }
-  .src a:hover { text-decoration: underline; }
-  /* LEGEND */
-  .legend { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: .85rem; }
-  .leg { display: flex; align-items: center; gap: 5px; font-size: 12px; color: var(--text2); }
-  .leg-sq { width: 10px; height: 10px; border-radius: 2px; flex-shrink: 0; }
-  /* HIGHLIGHT ROW */
-  .hl-row { background: var(--bg3); border-radius: var(--r); padding: .65rem 1rem; margin-bottom: .65rem; display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-  .hl-row:last-child { margin-bottom: 0; }
-  /* DIVIDER */
-  .divider { border: none; border-top: 1px solid var(--border); margin: 1.25rem 0; }
-  /* FOOTER */
-  footer { border-top: 1px solid var(--border); padding: 1.5rem 2rem; text-align: center; color: var(--text3); font-size: 12px; }
-  footer a { color: var(--accent); text-decoration: none; }
-  /* RESPONSIVE */
-  @media (max-width: 900px) {
-    .kpi-grid { grid-template-columns: repeat(2,1fr); }
-    .pilar-grid { grid-template-columns: 1fr; }
-    .grid2 { grid-template-columns: 1fr; }
-    .grid3 { grid-template-columns: repeat(2,1fr); }
-  }
-  @media (max-width: 600px) {
-    .container { padding: 1rem; }
-    .kpi-grid { grid-template-columns: 1fr 1fr; }
-    .grid3 { grid-template-columns: 1fr; }
-    .topbar { padding: 0 1rem; }
-    .hero-title { font-size: 20px; }
-    .topbar-meta .tag-gray { display: none; }
-  }
-  /* CHART HEIGHT fix */
-  .ch180 { position: relative; width: 100%; height: 180px; }
-  .ch220 { position: relative; width: 100%; height: 220px; }
-  .ch260 { position: relative; width: 100%; height: 260px; }
-  /* SCROLL smoothly */
-  html { scroll-behavior: smooth; }
-  /* Trend badge */
-  .trend { display: inline-flex; align-items: center; gap: 3px; font-size: 11px; font-weight: 500; padding: 2px 7px; border-radius: 20px; }
-  .trend-up { background: var(--tolima2); color: var(--tolima); }
-  .trend-dn { background: var(--red2); color: var(--red); }
-  .trend-eq { background: var(--yellow2); color: var(--yellow); }
-</style>
+<title>Competitividad Territorial · Tolima y Huila · IDC 2026 · UNIMINUTO Sede Tolima-Huila</title>
+<link rel="stylesheet" href="styles.css">
 </head>
 <body>
+<div class="app">
 
-<!-- TOP BAR -->
-<nav class="topbar">
-  <div class="topbar-brand">
-    <div class="brand-icon">📊</div>
-    <div>
-      <div class="brand-name">Competitividad Territorial</div>
-      <div class="brand-sub">Tolima &amp; Huila — IDC 2025</div>
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <div class="tag">UNIMINUTO · Sede Tolima-Huila</div>
+      <h1>Competitividad Territorial</h1>
+      <div class="sub">Tolima y Huila · IDC 2026</div>
     </div>
-  </div>
-  <div class="topbar-meta">
-    <span class="tag tag-green">Tolima #11</span>
-    <span class="tag tag-orange">Huila #15</span>
-    <span class="tag tag-blue">IDC 2025</span>
-    <span class="tag tag-gray">Fuente: CPC &amp; U. Rosario</span>
-  </div>
-</nav>
+    <!-- los grupos de filtros se generan desde app.js -->
+    <button class="clear-all" id="clear-all">Limpiar todos los filtros</button>
+    <div class="side-note">Los filtros de factor, pilar, año del dato y búsqueda aplican a los gráficos y tablas de cada pestaña.</div>
+  </aside>
 
-<div class="container">
+  <main class="main">
+    <div class="main-header">
+      <div>
+        <h2>Índice Departamental de Competitividad 2026</h2>
+        <div class="desc">Comparativo de Tolima y Huila frente al promedio nacional y al promedio del Top 10: 13 pilares, 24 subpilares y 93 indicadores, con serie histórica 2019–2026.</div>
+      </div>
+      <div class="as-of">IDC 2026 · publicado en julio de 2026</div>
+    </div>
 
-  <!-- HERO -->
-  <div class="hero">
-    <h1 class="hero-title">Tablero de Competitividad — Tolima &amp; Huila</h1>
-    <p class="hero-sub">
-      Análisis basado en el <span>Índice Departamental de Competitividad (IDC) 2025</span> — 
-      <span>98 indicadores · 13 pilares · 4 factores</span> · Publicado por el Consejo Privado de Competitividad &amp; Universidad del Rosario (junio 2025). 
-      Datos complementarios: DANE (GEIH 2024, PIB Departamental 2024pr, Pobreza Monetaria 2024).
-    </p>
-  </div>
+    <nav class="tabs" id="tabs"></nav>
+    <div class="empty-state" id="empty-state" style="display:none">Los filtros de factor y pilar no tienen pilares en común. Ajusta la selección o usa «Limpiar todos los filtros».</div>
 
-  <!-- FILTERS -->
-  <div class="filters">
-    <span class="filter-label">Filtrar vista:</span>
-    <button class="pill active-a" id="f-ambos" onclick="setFiltro('ambos')">Ambos departamentos</button>
-    <button class="pill" id="f-tolima" onclick="setFiltro('tolima')">Solo Tolima</button>
-    <button class="pill" id="f-huila" onclick="setFiltro('huila')">Solo Huila</button>
-  </div>
-
-  <!-- KPIs -->
-  <div class="kpi-grid" id="kpis-ambos">
-    <div class="kpi-card">
-      <div class="kpi-label">Tolima — Ranking IDC 2025</div>
-      <div class="kpi-value kv-tolima">11 <span style="font-size:16px;color:var(--text2)">/ 33</span></div>
-      <div class="kpi-sub">Puntaje: <strong>5.48</strong> / 10</div>
-      <div class="kpi-delta up">▲ 2 puestos vs 2023 &nbsp;·&nbsp; ▲ 1 vs 2024</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-label">Huila — Ranking IDC 2025</div>
-      <div class="kpi-value kv-huila">15 <span style="font-size:16px;color:var(--text2)">/ 33</span></div>
-      <div class="kpi-sub">Puntaje: <strong>5.20</strong> / 10</div>
-      <div class="kpi-delta eq">= Misma posición que 2024 &nbsp;·&nbsp; ▲ +0.10 pts</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-label">Líder nacional (referencia)</div>
-      <div class="kpi-value kv-accent">8.13</div>
-      <div class="kpi-sub">Bogotá D.C. · Puesto #1 · Lidera 9/13 pilares</div>
-      <div class="kpi-delta" style="color:var(--text2)">Bloque alto: Antioquia 6.82 · Valle 6.30</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-label">Brecha vs líder nacional</div>
-      <div class="kpi-value" style="color:var(--red)">−2.65</div>
-      <div class="kpi-sub">Puntos que separan a Tolima de Bogotá</div>
-      <div class="kpi-delta dn">Huila: −2.93 pts vs Bogotá</div>
-    </div>
-  </div>
-
-  <div class="kpi-grid" id="kpis-tolima" style="display:none">
-    <div class="kpi-card">
-      <div class="kpi-label">Ranking IDC 2025</div>
-      <div class="kpi-value kv-tolima">11 <span style="font-size:16px;color:var(--text2)">/33</span></div>
-      <div class="kpi-delta up">▲ 2 puestos vs 2023</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-label">Puntaje general</div>
-      <div class="kpi-value kv-tolima">5.48</div>
-      <div class="kpi-delta up">▲ +0.18 vs 2024 (5.30)</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-label">Mejor pilar</div>
-      <div class="kpi-value kv-tolima" style="font-size:18px">Ed. Básica</div>
-      <div class="kpi-sub">Puesto 4 nacional · 7.8/10</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-label">Desempleo 2024</div>
-      <div class="kpi-value" style="color:var(--red)">12.0%</div>
-      <div class="kpi-delta dn">▲ +0.5 pp vs 2023 · 6° más alto</div>
-    </div>
-  </div>
-
-  <div class="kpi-grid" id="kpis-huila" style="display:none">
-    <div class="kpi-card">
-      <div class="kpi-label">Ranking IDC 2025</div>
-      <div class="kpi-value kv-huila">15 <span style="font-size:16px;color:var(--text2)">/33</span></div>
-      <div class="kpi-delta eq">= Misma posición 2024</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-label">Puntaje general</div>
-      <div class="kpi-value kv-huila">5.20</div>
-      <div class="kpi-delta up">▲ +0.10 vs 2024 (5.10)</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-label">Mejor pilar</div>
-      <div class="kpi-value kv-huila" style="font-size:18px">Sist. Fin.</div>
-      <div class="kpi-sub">Puesto 4 nacional · 5.74/10</div>
-    </div>
-    <div class="kpi-card">
-      <div class="kpi-label">Desempleo 2024</div>
-      <div class="kpi-value" style="color:var(--tolima)">8.4%</div>
-      <div class="kpi-delta up">3° más bajo del país</div>
-    </div>
-  </div>
-
-  <!-- TABS -->
-  <div class="tabs">
-    <div class="tab active" onclick="setTab('ranking')">Ranking nacional</div>
-    <div class="tab" onclick="setTab('pilares')">Pilares IDC</div>
-    <div class="tab" onclick="setTab('laboral')">Mercado laboral</div>
-    <div class="tab" onclick="setTab('economia')">Economía</div>
-    <div class="tab" onclick="setTab('tendencia')">Tendencia histórica</div>
-    <div class="tab" onclick="setTab('estrategia')">Análisis estratégico</div>
-  </div>
-
-  <!-- TAB: RANKING -->
-  <div class="tab-panel active" id="panel-ranking">
-    <div class="grid2">
-      <div class="card">
-        <div class="card-title">IDC 2025 — Ranking por puntaje (top 20)</div>
-        <div class="legend">
-          <span class="leg"><span class="leg-sq" style="background:#58a6ff"></span>Grupo alto (6–8 pts)</span>
-          <span class="leg"><span class="leg-sq" style="background:#3fb950"></span>Tolima #11</span>
-          <span class="leg"><span class="leg-sq" style="background:#f0883e"></span>Huila #15</span>
-          <span class="leg"><span class="leg-sq" style="background:#30363d"></span>Otros departamentos</span>
+    <!-- ============ PANORAMA ============ -->
+    <section class="view" id="view-panorama">
+      <div class="kpi-row" id="kpi-pan"></div>
+      <div class="grid">
+        <div class="panel full">
+          <h3>Puntaje por pilar</h3>
+          <div class="panel-sub">Puntaje estandarizado 0–10 · el puesto (entre 33 territorios) aparece bajo cada pilar</div>
+          <div class="legend" id="legend-pan"></div>
+          <div class="chart-wrap" id="wrap-pilares"><canvas id="chart-pilares"></canvas></div>
         </div>
-        <div id="ranking-bars-container"></div>
-        <div class="src">
-          Fuente: Consejo Privado de Competitividad &amp; Universidad del Rosario — 
-          <a href="https://compite.com.co/indice-departamental-de-competitividad-idc/" target="_blank">IDC 2025</a> (jun 2025). 
-          Datos numéricos confirmados: Cámara de Comercio de Cali — Revisión IDC 2025.
+        <div class="panel">
+          <h3>Perfil competitivo</h3>
+          <div class="panel-sub">Los 13 pilares frente al promedio nacional y al Top 10</div>
+          <div class="chart-wrap tall"><canvas id="chart-radar"></canvas></div>
+        </div>
+        <div class="panel">
+          <h3>Puntaje por factor</h3>
+          <div class="panel-sub">Promedio de los pilares de cada factor del IDC</div>
+          <div class="chart-wrap tall"><canvas id="chart-factores"></canvas></div>
+        </div>
+        <div class="panel full">
+          <h3>Mapa de posiciones por pilar</h3>
+          <div class="panel-sub">Haz clic en un pilar para ver su detalle · Puesto entre 33 territorios (1 = mejor)</div>
+          <div class="legend"><span><i style="background:var(--good-bg);border:1px solid var(--good-tx)"></i>Fortaleza (puesto 1–8)</span><span><i style="background:var(--mid-bg);border:1px solid var(--mid-tx)"></i>Intermedio (9–18)</span><span><i style="background:var(--bad-bg);border:1px solid var(--bad-tx)"></i>Brecha (19–33)</span></div>
+          <div class="table-wrap"><table id="tbl-map"></table></div>
+        </div>
+        <div class="panel full">
+          <h3>Escalafón general IDC 2026</h3>
+          <div class="panel-sub">Posición de los 33 territorios · Tolima y Huila resaltados</div>
+          <div class="ladder" id="ladder"></div>
+          <div class="note" id="ladder-note"></div>
+        </div>
+        <div class="panel full">
+          <h3>Fortalezas y brechas</h3>
+          <div class="panel-sub">Calculado automáticamente con los puestos de la edición 2026</div>
+          <div class="ins-cols" id="insights"></div>
         </div>
       </div>
-      <div class="card">
-        <div class="card-title">Comparativo de puntaje IDC — grupos de desempeño</div>
-        <div class="ch260"><canvas id="chartGrupos" role="img" aria-label="Gráfico comparativo de puntajes IDC 2025 por grupos de desempeño">Bogotá 8.13, Antioquia 6.82, Valle 6.30, Tolima 5.48, Huila 5.20, promedio nacional aprox 5.0</canvas></div>
-        <div class="src">Fuente: IDC 2025 — CPC &amp; U. Rosario. La línea punteada indica el puntaje promedio estimado del bloque intermedio (5.0–6.0 pts).</div>
-      </div>
-    </div>
+    </section>
 
-    <div class="card">
-      <div class="card-title">Posicionamiento en la Región Central RAP-E — IDC 2025</div>
-      <div class="grid3">
-        <div>
-          <div style="font-size:12px;color:var(--text2);margin-bottom:8px">Los 6 territorios de la RAP-E Región Central se ubican entre los primeros 20 puestos del ranking general.</div>
-          <div class="hl-row">
-            <span style="color:var(--accent);font-weight:600;font-size:13px">Bogotá D.C.</span>
-            <span class="trend trend-up">#1 · 8.13</span>
-          </div>
-          <div class="hl-row">
-            <span style="color:var(--text);font-size:13px">Cundinamarca</span>
-            <span class="trend trend-up">#8 · 6.11</span>
-          </div>
-          <div class="hl-row">
-            <span style="color:var(--text);font-size:13px">Boyacá</span>
-            <span class="trend trend-up">#10 · 5.81</span>
-          </div>
-          <div class="hl-row">
-            <span style="color:var(--tolima);font-weight:600;font-size:13px">Tolima</span>
-            <span class="trend trend-up">#11 · 5.48</span>
-          </div>
-          <div class="hl-row">
-            <span style="color:var(--huila);font-weight:600;font-size:13px">Huila</span>
-            <span class="trend trend-eq">#15 · 5.20</span>
-          </div>
-          <div class="hl-row">
-            <span style="color:var(--text);font-size:13px">Meta</span>
-            <span class="trend trend-up">#16 · 5.07</span>
-          </div>
+    <!-- ============ PILARES ============ -->
+    <section class="view" id="view-pilares">
+      <div class="pill-nav" id="pill-nav"></div>
+      <div id="pillar-head"></div>
+      <div class="kpi-row" id="kpi-pil"></div>
+      <div class="best-row" id="best-row"></div>
+      <div class="grid">
+        <div class="panel" id="panel-sub">
+          <h3>Subpilares</h3>
+          <div class="panel-sub">Puntaje 2026 y puesto de cada subpilar</div>
+          <div class="chart-wrap" id="wrap-sub"><canvas id="chart-sub"></canvas></div>
         </div>
-        <div style="grid-column:span 2">
-          <div class="ch220"><canvas id="chartRAP" role="img" aria-label="Gráfico de barras comparativo RAP-E Región Central IDC 2025">Bogotá 8.13, Cundinamarca 6.11, Boyacá 5.81, Tolima 5.48, Huila 5.20, Meta 5.07</canvas></div>
+        <div class="panel" id="panel-hist-pil">
+          <h3>Evolución 2019–2026</h3>
+          <div class="panel-sub">Serie recalculada bajo la metodología 2026</div>
+          <div class="chart-wrap" id="wrap-hist-pil"><canvas id="chart-hist-pil"></canvas></div>
+        </div>
+        <div class="panel full">
+          <h3>Indicadores del pilar</h3>
+          <div class="panel-sub">Puntaje estandarizado 0–10 · [puesto] y año del dato</div>
+          <div class="chart-wrap" id="wrap-ind-pil"><canvas id="chart-ind-pil"></canvas></div>
+        </div>
+        <div class="panel full">
+          <h3>Detalle de indicadores, cálculo y fuente</h3>
+          <div class="panel-sub">Haz clic en una fila para ver la definición operacional y la fuente</div>
+          <div class="table-wrap"><table id="tbl-ind-pil"></table></div>
         </div>
       </div>
-      <div class="src">Fuente: RAP-E Región Central — 
-        <a href="https://regioncentralrape.gov.co/bogota-y-los-departamentos-de-la-region-central-se-destacan-en-el-indice-departamental-de-competitividad/" target="_blank">Comunicado IDC 2025</a> (jun 2025). La región lidera dos pilares clave a nivel nacional: infraestructura y tamaño del mercado.
-      </div>
-    </div>
-  </div>
+    </section>
 
-  <!-- TAB: PILARES -->
-  <div class="tab-panel" id="panel-pilares">
-    <div class="card">
-      <div class="card-title">Desempeño por pilares — posición nacional (de 33) y puntaje estimado</div>
-      <div class="legend">
-        <span class="leg"><span class="leg-sq" style="background:#3fb950"></span>Tolima</span>
-        <span class="leg"><span class="leg-sq" style="background:#f0883e"></span>Huila</span>
-        <span class="leg"><span class="leg-sq" style="background:#3fb950;opacity:.4"></span>Fortaleza (pos ≤ 8)</span>
-        <span class="leg"><span class="leg-sq" style="background:#e3b341"></span>Intermedio (9–18)</span>
-        <span class="leg"><span class="leg-sq" style="background:#f85149"></span>Brecha (pos &gt; 18)</span>
-      </div>
-      <div class="pilar-grid" id="pilar-container"></div>
-      <div class="src">
-        Fuente: CPC &amp; U. Rosario — IDC 2025; 
-        <a href="https://diariodelhuila.com/huila-se-ubica-en-el-puesto-15-del-indice-departamental-de-competitividad-2025/" target="_blank">Diario del Huila</a> (jun 2025); 
-        <a href="https://elcronista.co/destacadas/tolima-numero-11-en-el-indice-departamental-de-competitividad-2025" target="_blank">El Cronista</a> (jun 2025); 
-        <a href="https://laultima.com.co/2025/06/12/huila-se-mantiene-en-la-posicion-15-del-indice-departamental-de-competitividad-2025/" target="_blank">La Última</a> (jun 2025).
-        Nota: puntajes por pilar son estimaciones basadas en posición relativa y datos parciales publicados; puntajes exactos en informe oficial CPC.
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-title">Gráfico radar — Pilares IDC 2025 · Tolima vs Huila</div>
-      <div style="max-width:480px;margin:0 auto;position:relative;height:320px">
-        <canvas id="chartRadar" role="img" aria-label="Gráfico radar comparativo de pilares IDC Tolima vs Huila 2025"></canvas>
-      </div>
-      <div class="src">Visualización basada en posiciones normalizadas (inverso del ranking, escala 0–10). Fuente: IDC 2025 CPC &amp; U. Rosario.</div>
-    </div>
-  </div>
-
-  <!-- TAB: LABORAL -->
-  <div class="tab-panel" id="panel-laboral">
-    <div class="grid2">
-      <div class="card">
-        <div class="card-title">Tasa de desocupación departamental 2024</div>
-        <div id="empleo-bars"></div>
-        <div class="src">Fuente: DANE — 
-          <a href="https://www.dane.gov.co/files/operaciones/GEIH/bol-GEIHDepartamentos-2024.pdf" target="_blank">GEIH Mercado Laboral por Departamentos 2024</a> (publicado abr 2025). Análisis: El Nuevo Día Ibagué.
+    <!-- ============ INDICADORES ============ -->
+    <section class="view" id="view-indicadores">
+      <div class="kpi-row" id="kpi-ind"></div>
+      <div class="grid">
+        <div class="panel">
+          <h3>Distribución de posiciones</h3>
+          <div class="panel-sub">Cantidad de indicadores por rango de puesto (1–8 · 9–18 · 19–33)</div>
+          <div class="chart-wrap xtall"><canvas id="chart-dist"></canvas></div>
+        </div>
+        <div class="panel">
+          <h3>Indicadores en brecha por pilar</h3>
+          <div class="panel-sub">Indicadores con puesto 19 o inferior</div>
+          <div class="chart-wrap xtall"><canvas id="chart-brechas"></canvas></div>
+        </div>
+        <div class="panel full">
+          <h3>Los 93 indicadores del IDC 2026</h3>
+          <div class="panel-sub" id="ind-count-sub"></div>
+          <div class="table-wrap"><table id="tbl-ind"></table></div>
         </div>
       </div>
-      <div class="card">
-        <div class="card-title">Desempleo Tolima 2024 — análisis de brechas</div>
-        <div class="kpi-grid" style="grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1rem">
-          <div class="kpi-card" style="padding:.75rem">
-            <div class="kpi-label">Hombres</div>
-            <div class="kpi-value" style="font-size:22px;color:var(--yellow)">10.0%</div>
-          </div>
-          <div class="kpi-card" style="padding:.75rem">
-            <div class="kpi-label">Mujeres</div>
-            <div class="kpi-value" style="font-size:22px;color:var(--red)">15.2%</div>
-          </div>
-          <div class="kpi-card" style="padding:.75rem">
-            <div class="kpi-label">Zona urbana</div>
-            <div class="kpi-value" style="font-size:22px;color:var(--red)">13.9%</div>
-          </div>
-          <div class="kpi-card" style="padding:.75rem">
-            <div class="kpi-label">Zona rural</div>
-            <div class="kpi-value" style="font-size:22px;color:var(--tolima)">7.0%</div>
-          </div>
-        </div>
-        <div class="insight insight-warn">
-          <div class="insight-title">Brecha de género: 5.2 puntos porcentuales</div>
-          <div class="insight-txt">La tasa femenina (15.2%) supera en 5.2 pp la masculina (10.0%). Magdalena tiene la mayor brecha nacional (10.7 pp); Tolima se ubica en rango intermedio-alto.</div>
-        </div>
-        <div class="insight insight-danger">
-          <div class="insight-title">Desempleo urbano supera el rural en 6.9 pp</div>
-          <div class="insight-txt">La concentración del desempleo en cabeceras municipales (13.9%) requiere estrategias focalizadas en Ibagué y municipios capitales del departamento.</div>
-        </div>
-        <div class="src">Fuente: DANE — GEIH Departamentos 2024.</div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-title">Comparativo tasas de desocupación — Tolima, Huila y Colombia (2022–2024)</div>
-      <div class="ch220"><canvas id="chartEmpTend" role="img" aria-label="Tendencia desempleo Tolima Huila y Colombia 2022-2024">Tolima 2022:15.7%, 2023:11.5%, 2024:12%. Huila 2022:8.4%, 2023:8.4%, 2024:8.4%. Colombia 2022:11.2%, 2023:10.5%, 2024:10.2%</canvas></div>
-      <div class="legend" style="margin-top:.75rem">
-        <span class="leg"><span class="leg-sq" style="background:#3fb950"></span>Tolima</span>
-        <span class="leg"><span class="leg-sq" style="background:#f0883e"></span>Huila</span>
-        <span class="leg"><span class="leg-sq" style="background:#8b949e;width:20px;height:3px;border-radius:0"></span>Colombia</span>
-      </div>
-      <div class="src">Fuente: DANE — GEIH Departamentos 2022, 2023 y 2024. El Nuevo Día Ibagué; El Cronista.</div>
-    </div>
-  </div>
+    </section>
 
-  <!-- TAB: ECONOMIA -->
-  <div class="tab-panel" id="panel-economia">
-    <div class="grid2">
-      <div class="card">
-        <div class="card-title">Participación en el PIB de la Región Central (2024pr)</div>
-        <div style="max-width:320px;margin:0 auto;position:relative;height:240px">
-          <canvas id="chartPIBRegion" role="img" aria-label="Participación en PIB región central: Antioquia 63.5%, Tolima 9.3%, Huila 7.4%, Caldas 7.2%, Risaralda 7.2%, Quindío 3.7%, Caquetá 1.7%"></canvas>
+    <!-- ============ HISTÓRICO ============ -->
+    <section class="view" id="view-historico">
+      <div class="grid">
+        <div class="panel full">
+          <h3 id="hist-title">Puntaje general 2019–2026</h3>
+          <div class="panel-sub" id="hist-sub"></div>
+          <div class="chart-wrap tall"><canvas id="chart-general"></canvas></div>
         </div>
-        <div class="src">Fuente: DANE — 
-          <a href="https://www.dane.gov.co/files/operaciones/PIB/bol-PIBDep-2024pr.pdf" target="_blank">Boletín PIB Departamental 2024pr</a> (may 2025). Región Central representa el 23.4% del PIB nacional.
+        <div class="panel">
+          <h3>Cambio 2025 → 2026 por pilar</h3>
+          <div class="panel-sub">Diferencia de puntaje frente a la serie 2025 recalculada</div>
+          <div class="chart-wrap" id="wrap-d26"><canvas id="chart-d26"></canvas></div>
+        </div>
+        <div class="panel">
+          <h3>Cambio 2019 → 2026 por pilar</h3>
+          <div class="panel-sub">Diferencia acumulada de puntaje en la serie recalculada</div>
+          <div class="chart-wrap" id="wrap-d19"><canvas id="chart-d19"></canvas></div>
+        </div>
+        <div class="panel full">
+          <h3>Serie histórica por pilar</h3>
+          <div class="panel-sub">Puntaje por año · la flecha compara 2026 con 2025</div>
+          <div class="table-wrap"><table id="tbl-hist"></table></div>
         </div>
       </div>
-      <div class="card">
-        <div class="card-title">Indicadores económicos clave — Colombia 2024</div>
-        <div class="hl-row" style="margin-bottom:.5rem">
-          <span style="font-size:12px;color:var(--text2)">PIB nacional 2024pr</span>
-          <span style="font-size:13px;font-weight:600;color:var(--text);font-family:'DM Mono',monospace">$1,706 billones COP</span>
-        </div>
-        <div class="hl-row" style="margin-bottom:.5rem">
-          <span style="font-size:12px;color:var(--text2)">PIB per cápita nacional</span>
-          <span style="font-size:13px;font-weight:600;color:var(--text);font-family:'DM Mono',monospace">$32.4M COP</span>
-        </div>
-        <div class="hl-row" style="margin-bottom:.5rem">
-          <span style="font-size:12px;color:var(--text2)">Tolima — particip. región central</span>
-          <span style="font-size:13px;font-weight:600;color:var(--tolima);font-family:'DM Mono',monospace">9.3%</span>
-        </div>
-        <div class="hl-row" style="margin-bottom:.5rem">
-          <span style="font-size:12px;color:var(--text2)">Huila — particip. región central</span>
-          <span style="font-size:13px;font-weight:600;color:var(--huila);font-family:'DM Mono',monospace">7.4%</span>
-        </div>
-        <div class="hl-row" style="margin-bottom:.5rem">
-          <span style="font-size:12px;color:var(--text2)">Tolima PIB per cápita (2022)</span>
-          <span style="font-size:13px;font-weight:600;color:var(--text2);font-family:'DM Mono',monospace">US$5,228</span>
-        </div>
-        <div class="hl-row">
-          <span style="font-size:12px;color:var(--text2)">Crecimiento PIB Tolima Q1-2025</span>
-          <span style="font-size:13px;font-weight:600;color:var(--tolima);font-family:'DM Mono',monospace">+2.6% (▲ nac.)</span>
-        </div>
-        <hr class="divider">
-        <div class="insight insight-ok" style="margin-bottom:0">
-          <div class="insight-title">Tolima: nuevo motor económico nacional</div>
-          <div class="insight-txt">Crecimiento del PIB del 2.6% en Q1 2025, por encima del promedio nacional. Reconocido por ANDI y Portafolio como uno de los departamentos con mayor dinamismo económico emergente.</div>
-        </div>
-        <div class="src">Fuente: DANE — CNDD 2024pr; Mincit — Perfiles Económicos Departamentales; ANDI — XXXVI Asamblea Seccional Tolima-Huila (jun 2025).</div>
+    </section>
+
+    <!-- ============ METODOLOGÍA ============ -->
+    <section class="view" id="view-metodologia">
+      <div class="grid">
+        <div class="panel full"><div class="prose" id="prose"></div></div>
       </div>
-    </div>
-    <div class="card">
-      <div class="card-title">Pobreza monetaria — Tolima y Huila (2024, DANE)</div>
-      <div class="grid2">
-        <div>
-          <div class="sec-head">Líneas de pobreza monetaria 2024</div>
-          <div class="hl-row">
-            <span style="font-size:12px;color:var(--text2)">Tolima — línea de pobreza</span>
-            <span style="font-family:'DM Mono',monospace;font-size:13px;color:var(--text)">$422,994 / mes</span>
-          </div>
-          <div class="hl-row">
-            <span style="font-size:12px;color:var(--text2)">Huila — línea de pobreza</span>
-            <span style="font-family:'DM Mono',monospace;font-size:13px;color:var(--text)">$413,330 / mes</span>
-          </div>
-          <div class="hl-row">
-            <span style="font-size:12px;color:var(--text2)">Variación Tolima 2023→2024</span>
-            <span class="trend trend-up">+6.1%</span>
-          </div>
-          <div class="hl-row">
-            <span style="font-size:12px;color:var(--text2)">Variación Huila 2023→2024</span>
-            <span class="trend trend-up">+5.6%</span>
-          </div>
-        </div>
-        <div>
-          <div class="sec-head">Personas en pobreza monetaria (miles)</div>
-          <div class="bar-row">
-            <span class="bl hl">Tolima</span>
-            <div class="bw"><div class="bf" style="width:98%;background:#f85149" id="bpov-tol"></div></div>
-            <span class="bv hl">534</span>
-          </div>
-          <div class="bar-row">
-            <span class="bl hl">Huila</span>
-            <div class="bw"><div class="bf" style="width:86%;background:#f0883e" id="bpov-hui"></div></div>
-            <span class="bv hl">468</span>
-          </div>
-          <div style="font-size:11px;color:var(--text3);margin-top:6px">Miles de personas. Tolima: reducción de 52k vs 2023 (-9.7%). Huila: ligero aumento de 6k (+1.3%).</div>
-        </div>
-      </div>
-      <div class="src">Fuente: DANE — 
-        <a href="https://www.dane.gov.co/files/operaciones/PM/pres-PMDepartamental-2024.pdf" target="_blank">Pobreza Monetaria Departamental 2024</a> (sep 2025). GEIH con base en proyecciones CNPV 2018.
-      </div>
-    </div>
-  </div>
+    </section>
 
-  <!-- TAB: TENDENCIA -->
-  <div class="tab-panel" id="panel-tendencia">
-    <div class="grid2">
-      <div class="card">
-        <div class="card-title">Evolución ranking IDC — Tolima (2020–2025)</div>
-        <div class="ch180"><canvas id="chartTendTolima" role="img" aria-label="Evolución ranking IDC Tolima: 2020=15, 2022=14, 2023=13, 2024=12, 2025=11. Tendencia sostenida de mejora."></canvas></div>
-        <div class="insight insight-ok" style="margin-top:.85rem">
-          <div class="insight-title">Progresión sostenida: 15 → 11 en 5 años</div>
-          <div class="insight-txt">Tolima es el único departamento que ha escalado posiciones de forma consecutiva desde 2020 en el bloque intermedio del IDC.</div>
-        </div>
-        <div class="src">Fuente: CPC &amp; U. Rosario — IDC ediciones 2020–2025. Gobernación del Tolima (jun 2025).</div>
-      </div>
-      <div class="card">
-        <div class="card-title">Evolución ranking IDC — Huila (2020–2025)</div>
-        <div class="ch180"><canvas id="chartTendHuila" role="img" aria-label="Evolución ranking IDC Huila: 2020=13, 2022=14, 2023=15, 2024=15, 2025=15. Tendencia de estancamiento."></canvas></div>
-        <div class="insight insight-warn" style="margin-top:.85rem">
-          <div class="insight-title">Estancamiento en posición 15 (2023–2025)</div>
-          <div class="insight-txt">Huila mejoró en puntaje (+0.10 pts) pero no logró avanzar en ranking, lo que indica que otros departamentos también mejoraron al mismo ritmo.</div>
-        </div>
-        <div class="src">Fuente: CPC &amp; U. Rosario — IDC 2020–2025. La Nación Huila; Diario del Huila (jun 2025).</div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-title">Comparativo puntaje IDC — Tolima vs Huila vs promedio bloque (2020–2025)</div>
-      <div class="ch220"><canvas id="chartTendComp" role="img" aria-label="Comparativo puntaje IDC Tolima vs Huila 2020-2025. Tolima crece de 4.7 a 5.48; Huila de 4.8 a 5.20. Ambos por debajo del promedio del bloque alto."></canvas></div>
-      <div class="legend" style="margin-top:.75rem">
-        <span class="leg"><span class="leg-sq" style="background:#3fb950"></span>Tolima</span>
-        <span class="leg"><span class="leg-sq" style="background:#f0883e"></span>Huila</span>
-        <span class="leg"><span class="leg-sq" style="background:#58a6ff;width:20px;height:3px;border-radius:0"></span>Bloque alto (ref. Caldas)</span>
-      </div>
-      <div class="src">Fuente: IDC 2020–2025 CPC &amp; U. Rosario. Nota: metodología recalculada en 2025 para comparabilidad histórica. Puntajes 2020–2024 pueden diferir de publicaciones originales.</div>
-    </div>
-  </div>
+    <footer class="credit" id="credit"></footer>
+  </main>
+</div>
 
-  <!-- TAB: ESTRATEGIA -->
-  <div class="tab-panel" id="panel-estrategia">
-    <div class="grid2">
-      <div class="card">
-        <div class="card-title">Tolima — fortalezas y brechas</div>
-        <div class="sec-head">✓ Fortalezas estratégicas</div>
-        <div class="insight insight-ok">
-          <div class="insight-title">Educación básica y media: puesto 4 nacional · 7.8/10</div>
-          <div class="insight-txt">2.° en cobertura educativa nacional. Top 5 en preescolar, primaria y secundaria. Activo diferenciador para talento humano. Fuente: IDC 2025.</div>
-        </div>
-        <div class="insight insight-ok">
-          <div class="insight-title">Infraestructura: puesto 7 nacional</div>
-          <div class="insight-txt">Posicionamiento logístico estratégico. EmpleaTIC e iniciativas de digitalización contribuyen. Palanca para diversificación económica. Fuente: IDC 2025; Gobernación Tolima.</div>
-        </div>
-        <div class="insight insight-ok">
-          <div class="insight-title">Crecimiento PIB Q1-2025: +2.6% — por encima del promedio nacional</div>
-          <div class="insight-txt">Reconocido como "nuevo motor de la economía" por Portafolio y ANDI jun 2025. Señal positiva para inversión.</div>
-        </div>
-        <hr class="divider">
-        <div class="sec-head">⚠ Brechas prioritarias</div>
-        <div class="insight insight-danger">
-          <div class="insight-title">Desempleo 12% — supera en 1.8 pp el promedio nacional</div>
-          <div class="insight-txt">Brecha de género: mujeres 15.2% vs hombres 10% (+5.2 pp). Zona urbana 13.9% vs rural 7%. Requiere política activa de empleo formal focalizada en Ibagué.</div>
-        </div>
-        <div class="insight insight-warn">
-          <div class="insight-title">Instituciones y tamaño del mercado: posición baja en ranking</div>
-          <div class="insight-txt">Pilares con mayores oportunidades de mejora según IDC 2025. Implica fortalecer gestión pública eficiente y diversificación productiva.</div>
-        </div>
-        <div class="insight insight-warn">
-          <div class="insight-title">Sofisticación y diversificación económica</div>
-          <div class="insight-txt">Posición 16. Dependencia de sectores primarios limita la sofisticación productiva. Oportunidad en encadenamientos agroindustriales y servicios.</div>
-        </div>
-      </div>
-      <div class="card">
-        <div class="card-title">Huila — fortalezas y brechas</div>
-        <div class="sec-head">✓ Fortalezas estratégicas</div>
-        <div class="insight insight-ok">
-          <div class="insight-title">Sistema financiero: puesto 4 nacional · 5.74/10</div>
-          <div class="insight-txt">Estructura sólida, de alto crecimiento y amplia cobertura. Cuentas de ahorro e infraestructura financiera lideran indicadores. Fuente: Cámara de Comercio Huila; IDC 2025.</div>
-        </div>
-        <div class="insight insight-ok">
-          <div class="insight-title">Infraestructura y educación básica: puesto 5 en ambos</div>
-          <div class="insight-txt">Cobertura de gas natural/GLP y vías departamentales en buen estado como indicadores destacados. Base sólida para atracción de agroindustria.</div>
-        </div>
-        <div class="insight insight-ok">
-          <div class="insight-title">Desempleo 8.4% — 3.° más bajo del país</div>
-          <div class="insight-txt">Activo competitivo diferenciador vs la mayoría de departamentos. Refleja dinámica de empleo rural y agroindustria cafetera y petrolera.</div>
-        </div>
-        <div class="insight insight-ok">
-          <div class="insight-title">Adopción TIC: mayor avance del IDC 2025 (+0.8 pts)</div>
-          <div class="insight-txt">El mayor salto de Huila en cualquier pilar en 2025. Señal de política pública efectiva en conectividad.</div>
-        </div>
-        <hr class="divider">
-        <div class="sec-head">⚠ Brechas prioritarias</div>
-        <div class="insight insight-danger">
-          <div class="insight-title">Entorno para los negocios: puesto 26 de 33</div>
-          <div class="insight-txt">Desafíos en trámites empresariales, simplificación regulatoria y especialización productiva. Barrera directa para atracción de IED. Fuente: IDC 2025; Diario del Huila.</div>
-        </div>
-        <div class="insight insight-danger">
-          <div class="insight-title">Instituciones: puesto 22 — gestión de regalías y recaudo</div>
-          <div class="insight-txt">Capacidad de recaudo y ahorro local limitada. Retroceso en sofisticación y diversificación. Riesgo de trampa de dependencia de sectores primarios (café, petróleo).</div>
-        </div>
-        <div class="insight insight-warn">
-          <div class="insight-title">Sostenibilidad ambiental: cayó del puesto 5 al 18</div>
-          <div class="insight-txt">Caída significativa asociada al cambio metodológico del IDC 2025. Requiere análisis detallado de los nuevos indicadores incorporados para establecer línea de acción.</div>
-        </div>
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-title">Brechas comunes — Tolima y Huila vs líderes nacionales</div>
-      <div class="grid2">
-        <div>
-          <div class="insight insight-info">
-            <div class="insight-title">Adopción TIC e innovación: brecha &gt;7.5 pts vs líderes</div>
-            <div class="insight-txt">Ancho de banda, diversificación de exportaciones e investigadores per cápita son los indicadores con mayor dispersión regional a nivel nacional (IDC 2025). Oportunidad directa para UNIMINUTO, U. del Tolima y USCO en I+D+i aplicada al territorio.</div>
-          </div>
-          <div class="insight insight-info">
-            <div class="insight-title">Sofisticación productiva: dependencia de sectores primarios</div>
-            <div class="insight-txt">Tanto Tolima (café, arroz, petróleo) como Huila (café, petróleo, cacao) presentan baja diversificación de exportaciones. El IDC identifica esto como limitante estructural de largo plazo para ambos territorios.</div>
-          </div>
-        </div>
-        <div>
-          <div class="insight insight-info">
-            <div class="insight-title">Educación superior y formación para el trabajo</div>
-            <div class="insight-txt">Pilar con oportunidades de mejora para ambos departamentos según el IDC 2025. La articulación entre oferta académica (virtual/presencial) y demanda productiva del territorio es una palanca crítica para cerrar brechas de competitividad.</div>
-          </div>
-          <div class="insight insight-info">
-            <div class="insight-title">Recomendación: articulación RAP-E como plataforma de acción</div>
-            <div class="insight-txt">Los 6 territorios de la RAP-E Región Central (incluyendo Tolima y Huila) comparten el liderazgo en infraestructura y tamaño del mercado. La acción coordinada entre departamentos puede acelerar el cierre de brechas en pilares como innovación, TIC y sofisticación productiva.</div>
-          </div>
-        </div>
-      </div>
-      <div class="src">Fuente: CPC &amp; U. Rosario — IDC 2025; RAP-E Región Central (jun 2025); ANDI — Asamblea Seccional Tolima-Huila 2025. Análisis propio con base en fuentes oficiales.</div>
-    </div>
-  </div>
-
-</div><!-- /container -->
-
-<footer>
-  <p>Tablero de Control de Competitividad Territorial — Tolima &amp; Huila · IDC 2025</p>
-  <p style="margin-top:6px">
-    Fuentes oficiales: 
-    <a href="https://compite.com.co/indice-departamental-de-competitividad-idc/" target="_blank">CPC &amp; Universidad del Rosario — IDC 2025</a> · 
-    <a href="https://www.dane.gov.co" target="_blank">DANE</a> · 
-    <a href="https://regioncentralrape.gov.co" target="_blank">RAP-E Región Central</a> · 
-    <a href="https://tolima.gov.co" target="_blank">Gobernación del Tolima</a>
-  </p>
-  <p style="margin-top:6px;color:var(--text3)">Elaborado con datos públicos verificados · Junio 2025 · Para uso institucional y académico</p>
-</footer>
-
-<script>
-/* ─── DATA ─── */
-const RANKING = [
-  {n:'Bogotá D.C.',s:8.13,r:1,c:'top'},
-  {n:'Antioquia',s:6.82,r:2,c:'top'},
-  {n:'Valle del Cauca',s:6.30,r:3,c:'top'},
-  {n:'Santander',s:6.28,r:4,c:'top'},
-  {n:'Risaralda',s:6.23,r:5,c:'top'},
-  {n:'Atlántico',s:6.15,r:6,c:'top'},
-  {n:'Caldas',s:6.12,r:7,c:'otros'},
-  {n:'Cundinamarca',s:6.11,r:8,c:'otros'},
-  {n:'Quindío',s:5.85,r:9,c:'otros'},
-  {n:'Boyacá',s:5.81,r:10,c:'otros'},
-  {n:'Tolima',s:5.48,r:11,c:'tolima'},
-  {n:'Bolívar',s:5.35,r:12,c:'otros'},
-  {n:'N. de Santander',s:5.28,r:13,c:'otros'},
-  {n:'Córdoba',s:5.20,r:14,c:'otros'},
-  {n:'Huila',s:5.20,r:15,c:'huila'},
-  {n:'Meta',s:5.07,r:16,c:'otros'},
-  {n:'Casanare',s:5.01,r:17,c:'otros'},
-  {n:'Nariño',s:4.94,r:18,c:'otros'},
-  {n:'Cauca',s:4.89,r:19,c:'otros'},
-  {n:'Magdalena',s:4.79,r:20,c:'otros'},
-];
-const COL = {top:'#58a6ff',tolima:'#3fb950',huila:'#f0883e',otros:'#30363d'};
-
-const PILARES = [
-  {n:'Educación básica y media', tp:4, hs:7.8, hp:5, ht:7.2},
-  {n:'Infraestructura',           tp:7, hs:6.1, hp:5, ht:6.4},
-  {n:'Sistema financiero',        tp:9, hs:5.5, hp:4, ht:5.74},
-  {n:'Salud',                     tp:13,hs:5.1, hp:9, ht:5.4},
-  {n:'Mercado laboral',           tp:18,hs:4.8, hp:10,ht:5.2},
-  {n:'Adopción TIC',              tp:14,hs:4.5, hp:12,ht:4.7},
-  {n:'Entorno negocios',          tp:19,hs:4.3, hp:26,ht:3.8},
-  {n:'Instituciones',             tp:22,hs:4.2, hp:22,ht:4.2},
-  {n:'Sofisticación/Diversif.',   tp:16,hs:4.1, hp:20,ht:3.9},
-  {n:'Sostenibilidad ambiental',  tp:14,hs:4.4, hp:18,ht:4.0},
-];
-
-/* ─── RENDER RANKING BARS ─── */
-(function(){
-  const c = document.getElementById('ranking-bars-container');
-  RANKING.forEach(d => {
-    const pct = ((d.s/8.13)*100).toFixed(1);
-    const hl = d.c==='tolima'||d.c==='huila';
-    const row = document.createElement('div');
-    row.className = 'bar-row';
-    row.innerHTML = `<span class="bl${hl?' hl':''}">${d.r}. ${d.n}</span>
-      <div class="bw"><div class="bf" style="width:${pct}%;background:${COL[d.c]}"></div></div>
-      <span class="bv${hl?' hl':''}">${d.s.toFixed(2)}</span>`;
-    c.appendChild(row);
-  });
-  const note = document.createElement('div');
-  note.style.cssText = 'font-size:11px;color:#484f58;margin-top:6px';
-  note.textContent = '+ 13 departamentos más (puestos 21–33). Ver informe completo IDC 2025 en compite.com.co';
-  c.appendChild(note);
-})();
-
-/* ─── RENDER PILAR GRID ─── */
-(function(){
-  const pg = document.getElementById('pilar-container');
-  PILARES.forEach(p => {
-    const tw = ((p.hs/10)*100).toFixed(0);
-    const hw = ((p.ht/10)*100).toFixed(0);
-    const tc = p.tp<=8?'#3fb950':p.tp<=18?'#e3b341':'#f85149';
-    const hc = p.hp<=8?'#3fb950':p.hp<=18?'#e3b341':'#f85149';
-    const div = document.createElement('div');
-    div.className = 'pilar-item';
-    div.innerHTML = `<div class="pilar-name">${p.n}</div>
-      <div class="mini-row">
-        <span class="mini-lbl" style="color:#3fb950">Tolima</span>
-        <div class="mini-w"><div class="mini-f" style="width:${tw}%;background:${tc}"></div></div>
-        <span class="mini-v">#${p.tp} · ${p.hs.toFixed(1)}</span>
-      </div>
-      <div class="mini-row">
-        <span class="mini-lbl" style="color:#f0883e">Huila</span>
-        <div class="mini-w"><div class="mini-f" style="width:${hw}%;background:${hc}"></div></div>
-        <span class="mini-v">#${p.hp} · ${p.ht.toFixed(1)}</span>
-      </div>`;
-    pg.appendChild(div);
-  });
-})();
-
-/* ─── RENDER EMPLEO BARS ─── */
-(function(){
-  const empleoData = [
-    {n:'Nariño',v:6.5,c:'otros'},
-    {n:'Cauca',v:8.2,c:'otros'},
-    {n:'Huila',v:8.4,c:'huila'},
-    {n:'Colombia',v:10.2,c:'nac'},
-    {n:'Tolima',v:12.0,c:'tolima'},
-    {n:'N. Santander',v:12.8,c:'otros'},
-    {n:'Caquetá',v:13.9,c:'otros'},
-    {n:'Chocó',v:15.9,c:'otros'},
-  ];
-  const c2 = {tolima:'#3fb950',huila:'#f0883e',nac:'#8b949e',otros:'#30363d'};
-  const ec = document.getElementById('empleo-bars');
-  empleoData.forEach(d => {
-    const pct = ((d.v/16)*100).toFixed(1);
-    const hl = d.c==='tolima'||d.c==='huila';
-    const row = document.createElement('div');
-    row.className = 'bar-row';
-    row.innerHTML = `<span class="bl${hl?' hl':''}">${d.n}</span>
-      <div class="bw"><div class="bf" style="width:${pct}%;background:${c2[d.c]}"></div></div>
-      <span class="bv${hl?' hl':''}">${d.v.toFixed(1)}%</span>`;
-    ec.appendChild(row);
-  });
-})();
-
-/* ─── CHARTS ─── */
-Chart.defaults.color = '#8b949e';
-Chart.defaults.borderColor = 'rgba(255,255,255,0.06)';
-Chart.defaults.font.family = "'DM Sans', sans-serif";
-
-/* Grupos IDC */
-new Chart(document.getElementById('chartGrupos'),{
-  type:'bar',
-  data:{
-    labels:['Bogotá','Antioquia','Valle','Atlántico','Caldas','Cundinamarca','Boyacá','Tolima','Huila','Meta','Nariño'],
-    datasets:[{
-      label:'Puntaje IDC 2025',
-      data:[8.13,6.82,6.30,6.15,6.12,6.11,5.81,5.48,5.20,5.07,4.94],
-      backgroundColor:['#58a6ff','#58a6ff','#58a6ff','#58a6ff','#30363d','#30363d','#30363d','#3fb950','#f0883e','#30363d','#30363d'],
-      borderRadius:4,borderSkipped:false,
-    }]
-  },
-  options:{
-    responsive:true,maintainAspectRatio:false,
-    plugins:{legend:{display:false},tooltip:{callbacks:{label:ctx=>' Puntaje: '+ctx.parsed.y.toFixed(2)}}},
-    scales:{
-      y:{min:4.0,max:8.5,grid:{color:'rgba(255,255,255,0.05)'},ticks:{stepSize:.5,font:{size:11}}},
-      x:{grid:{display:false},ticks:{font:{size:11},maxRotation:40}}
-    }
-  }
-});
-
-/* RAP-E bar */
-new Chart(document.getElementById('chartRAP'),{
-  type:'bar',
-  data:{
-    labels:['Bogotá D.C.','Cundinamarca','Boyacá','Tolima','Huila','Meta'],
-    datasets:[{
-      label:'Puntaje IDC 2025',
-      data:[8.13,6.11,5.81,5.48,5.20,5.07],
-      backgroundColor:['#58a6ff','#30363d','#30363d','#3fb950','#f0883e','#30363d'],
-      borderRadius:5,borderSkipped:false
-    }]
-  },
-  options:{
-    responsive:true,maintainAspectRatio:false,
-    indexAxis:'y',
-    plugins:{legend:{display:false}},
-    scales:{
-      x:{min:4.5,max:8.5,grid:{color:'rgba(255,255,255,0.05)'},ticks:{font:{size:11}}},
-      y:{grid:{display:false},ticks:{font:{size:11}}}
-    }
-  }
-});
-
-/* Radar pilares */
-new Chart(document.getElementById('chartRadar'),{
-  type:'radar',
-  data:{
-    labels:['Ed. básica','Infraestr.','Sist. fin.','Salud','Merc. lab.','TIC','Ent. neg.','Instituciones','Sofisticac.','Sostenib.'],
-    datasets:[
-      {label:'Tolima',data:[8.5,7.4,6.7,5.5,3.9,5.6,4.3,3.3,4.8,5.6],
-       borderColor:'#3fb950',backgroundColor:'rgba(63,185,80,.15)',pointBackgroundColor:'#3fb950',pointRadius:4,borderWidth:2},
-      {label:'Huila',data:[8.0,7.7,7.3,6.2,6.1,5.8,2.4,3.3,3.6,4.0],
-       borderColor:'#f0883e',backgroundColor:'rgba(240,136,62,.1)',pointBackgroundColor:'#f0883e',pointRadius:4,borderWidth:2,borderDash:[5,3]},
-    ]
-  },
-  options:{
-    responsive:true,maintainAspectRatio:false,
-    plugins:{legend:{display:true,position:'bottom',labels:{font:{size:11},boxWidth:12,padding:16}}},
-    scales:{r:{min:0,max:10,ticks:{stepSize:2,font:{size:10},backdropColor:'transparent'},grid:{color:'rgba(255,255,255,0.07)'},angleLines:{color:'rgba(255,255,255,0.07)'},pointLabels:{font:{size:10},color:'#8b949e'}}}
-  }
-});
-
-/* Empleo tendencia */
-new Chart(document.getElementById('chartEmpTend'),{
-  type:'line',
-  data:{
-    labels:['2022','2023','2024'],
-    datasets:[
-      {label:'Tolima',data:[15.7,11.5,12.0],borderColor:'#3fb950',backgroundColor:'transparent',tension:.3,pointRadius:5,pointBackgroundColor:'#3fb950',borderWidth:2},
-      {label:'Huila',data:[8.4,8.4,8.4],borderColor:'#f0883e',backgroundColor:'transparent',tension:.3,pointRadius:5,pointBackgroundColor:'#f0883e',borderWidth:2,borderDash:[5,3]},
-      {label:'Colombia',data:[11.2,10.5,10.2],borderColor:'#8b949e',backgroundColor:'transparent',tension:.3,pointRadius:5,pointBackgroundColor:'#8b949e',borderWidth:1.5,borderDash:[2,2]},
-    ]
-  },
-  options:{
-    responsive:true,maintainAspectRatio:false,
-    plugins:{legend:{display:false}},
-    scales:{
-      y:{min:6,max:17,grid:{color:'rgba(255,255,255,0.05)'},ticks:{font:{size:11},callback:v=>v+'%'}},
-      x:{grid:{display:false},ticks:{font:{size:12}}}
-    }
-  }
-});
-
-/* PIB donut */
-new Chart(document.getElementById('chartPIBRegion'),{
-  type:'doughnut',
-  data:{
-    labels:['Antioquia','Tolima','Huila','Caldas','Risaralda','Quindío','Caquetá'],
-    datasets:[{
-      data:[63.5,9.3,7.4,7.2,7.2,3.7,1.7],
-      backgroundColor:['#58a6ff','#3fb950','#f0883e','#bc8cff','#e3b341','#5cccd8','#30363d'],
-      borderColor:'#161b22',borderWidth:2
-    }]
-  },
-  options:{
-    responsive:true,maintainAspectRatio:false,
-    plugins:{
-      legend:{display:true,position:'right',labels:{font:{size:11},boxWidth:12,padding:8}},
-      tooltip:{callbacks:{label:ctx=>ctx.label+': '+ctx.parsed+'%'}}
-    }
-  }
-});
-
-/* Tendencia ranking Tolima */
-new Chart(document.getElementById('chartTendTolima'),{
-  type:'line',
-  data:{
-    labels:['2020','2022','2023','2024','2025'],
-    datasets:[{
-      label:'Ranking Tolima',
-      data:[15,14,13,12,11],
-      borderColor:'#3fb950',backgroundColor:'rgba(63,185,80,.08)',fill:true,tension:.3,pointRadius:6,pointBackgroundColor:'#3fb950',borderWidth:2
-    }]
-  },
-  options:{
-    responsive:true,maintainAspectRatio:false,
-    plugins:{legend:{display:false}},
-    scales:{
-      y:{reverse:true,min:9,max:17,grid:{color:'rgba(255,255,255,0.05)'},ticks:{stepSize:1,font:{size:11},callback:v=>'#'+v}},
-      x:{grid:{display:false},ticks:{font:{size:12}}}
-    }
-  }
-});
-
-/* Tendencia ranking Huila */
-new Chart(document.getElementById('chartTendHuila'),{
-  type:'line',
-  data:{
-    labels:['2020','2022','2023','2024','2025'],
-    datasets:[{
-      label:'Ranking Huila',
-      data:[13,14,15,15,15],
-      borderColor:'#f0883e',backgroundColor:'rgba(240,136,62,.08)',fill:true,tension:.3,pointRadius:6,pointBackgroundColor:'#f0883e',borderWidth:2
-    }]
-  },
-  options:{
-    responsive:true,maintainAspectRatio:false,
-    plugins:{legend:{display:false}},
-    scales:{
-      y:{reverse:true,min:11,max:17,grid:{color:'rgba(255,255,255,0.05)'},ticks:{stepSize:1,font:{size:11},callback:v=>'#'+v}},
-      x:{grid:{display:false},ticks:{font:{size:12}}}
-    }
-  }
-});
-
-/* Tendencia comparativa puntajes */
-new Chart(document.getElementById('chartTendComp'),{
-  type:'line',
-  data:{
-    labels:['2020','2022','2023','2024','2025'],
-    datasets:[
-      {label:'Tolima',data:[4.70,5.00,5.20,5.30,5.48],borderColor:'#3fb950',backgroundColor:'transparent',tension:.3,pointRadius:5,pointBackgroundColor:'#3fb950',borderWidth:2},
-      {label:'Huila',data:[4.80,5.10,5.10,5.10,5.20],borderColor:'#f0883e',backgroundColor:'transparent',tension:.3,pointRadius:5,pointBackgroundColor:'#f0883e',borderWidth:2,borderDash:[5,3]},
-      {label:'Bloque alto (Caldas ref.)',data:[5.80,5.90,5.95,6.00,6.12],borderColor:'#58a6ff',backgroundColor:'transparent',tension:.3,pointRadius:3,pointBackgroundColor:'#58a6ff',borderWidth:1.5,borderDash:[2,2]},
-    ]
-  },
-  options:{
-    responsive:true,maintainAspectRatio:false,
-    plugins:{legend:{display:false}},
-    scales:{
-      y:{min:4.4,max:6.4,grid:{color:'rgba(255,255,255,0.05)'},ticks:{font:{size:11}}},
-      x:{grid:{display:false},ticks:{font:{size:12}}}
-    }
-  }
-});
-
-/* ─── INTERACTIVITY ─── */
-function setFiltro(v){
-  ['ambos','tolima','huila'].forEach(id=>{
-    document.getElementById('kpis-'+id).style.display='none';
-  });
-  document.getElementById('kpis-'+v).style.display='grid';
-  ['f-ambos','f-tolima','f-huila'].forEach(id=>{
-    const el=document.getElementById(id);
-    el.classList.remove('active-a','active-t','active-h');
-  });
-  const map={ambos:'active-a',tolima:'active-t',huila:'active-h'};
-  document.getElementById('f-'+v).classList.add(map[v]);
-}
-
-function setTab(t){
-  document.querySelectorAll('.tab').forEach(el=>el.classList.remove('active'));
-  document.querySelectorAll('.tab-panel').forEach(el=>el.classList.remove('active'));
-  event.target.classList.add('active');
-  document.getElementById('panel-'+t).classList.add('active');
-}
-</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<script src="app.js"></script>
 </body>
 </html>
