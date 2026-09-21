@@ -17,7 +17,7 @@
     </div>
     <!-- los grupos de filtros se generan desde app.js -->
     <button class="clear-all" id="clear-all">Limpiar todos los filtros</button>
-    <div class="side-note">Los filtros de factor, pilar, año del dato y búsqueda aplican a los gráficos y tablas de cada pestaña.</div>
+    <div class="side-note">Departamento, factor y pilar filtran todas las pestañas. El año del dato y la búsqueda de indicador están dentro de la pestaña Indicadores.</div>
   </aside>
 
   <main class="main">
@@ -104,6 +104,7 @@
 
     <!-- ============ INDICADORES ============ -->
     <section class="view" id="view-indicadores">
+      <div id="ind-filters"></div>
       <div class="kpi-row" id="kpi-ind"></div>
       <div class="grid">
         <div class="panel">

@@ -133,6 +133,7 @@ async function boot() {
   state.pillarSel = DATA.pillars[0].code;
   buildTabs();
   buildSidebar();
+  buildIndFilters();
   render();
 }
 
@@ -190,33 +191,89 @@ function buildSidebar() {
   });
   sb.insertBefore(group('Pilar', 'pillars', pl, false), before);
 
+  before.onclick = clearAllFilters;
+}
+
+function clearAllFilters() {
+  state.dept = 'both'; state.factors.clear(); state.pillars.clear(); state.years.clear(); state.q = '';
+  buildSidebar(); buildIndFilters(); render();
+}
+function clearIndFilters() {
+  state.years.clear(); state.q = '';
+  buildIndFilters(); render();
+}
+
+/* ---------------- filtros propios de la pestaña Indicadores ---------------- */
+function buildIndFilters() {
+  const box = el('ind-filters');
+  box.innerHTML = '';
+  const panel = document.createElement('div'); panel.className = 'panel ind-filter-panel';
+  const nActive = state.years.size + (state.q.trim() ? 1 : 0);
+  panel.innerHTML = `<div class="ind-filter-head"><h3>Filtrar indicadores${nActive ? `<span class="cnt">${nActive}</span>` : ''}</h3><button class="mini-clear" id="ind-clear">Limpiar</button></div>`;
+  const row = document.createElement('div'); row.className = 'ind-filter-row';
+
   // Año del dato
-  const yrs = [...new Set(DATA.pillars.flatMap(p => p.indicators.map(i => i.year)))].sort();
+  const colY = document.createElement('div'); colY.className = 'ind-filter-col';
+  colY.innerHTML = '<div class="ind-filter-label">Año del dato</div>';
   const yl = document.createElement('div'); yl.className = 'chip-list';
+  const yrs = [...new Set(DATA.pillars.flatMap(p => p.indicators.map(i => i.year)))].sort();
   yrs.forEach(y => {
     const b = document.createElement('button');
     b.className = 'chip' + (state.years.has(y) ? ' active' : ''); b.textContent = y;
-    b.onclick = () => { state.years.has(y) ? state.years.delete(y) : state.years.add(y); b.classList.toggle('active'); render(); };
+    b.onclick = () => { state.years.has(y) ? state.years.delete(y) : state.years.add(y); b.classList.toggle('active'); buildIndFilters(); render(); };
     yl.appendChild(b);
   });
-  sb.insertBefore(group('Año del dato (indicadores)', 'years', yl, false), before);
+  colY.appendChild(yl); row.appendChild(colY);
 
-  // Búsqueda
-  const sw = document.createElement('div');
-  const inp = document.createElement('input'); inp.type = 'text'; inp.className = 'search-box'; inp.placeholder = 'Buscar indicador…'; inp.value = state.q;
-  inp.oninput = () => { state.q = inp.value; render(); };
-  sw.appendChild(inp);
-  sb.insertBefore(group('Buscar indicador', 'q', sw), before);
+  // Búsqueda — combobox con lista desplegable de los 93 indicadores
+  const colS = document.createElement('div'); colS.className = 'ind-filter-col grow';
+  colS.innerHTML = '<div class="ind-filter-label">Buscar indicador</div>';
+  const allInds = DATA.pillars.flatMap(p => p.indicators.map(i => ({ name: i.name, pillar: p.short })))
+    .sort((a, b) => norm(a.name) < norm(b.name) ? -1 : 1);
+  const sw = document.createElement('div'); sw.className = 'search-wrap';
+  const inp = document.createElement('input');
+  inp.type = 'text'; inp.className = 'search-box'; inp.placeholder = 'Escribe o elige un indicador…'; inp.autocomplete = 'off'; inp.value = state.q;
+  const clearBtn = document.createElement('button'); clearBtn.type = 'button'; clearBtn.className = 'search-clear'; clearBtn.innerHTML = '×'; clearBtn.title = 'Limpiar búsqueda';
+  const dd = document.createElement('div'); dd.className = 'search-dd';
 
-  before.onclick = () => {
-    state.dept = 'both'; state.factors.clear(); state.pillars.clear(); state.years.clear(); state.q = '';
-    buildSidebar(); render();
-  };
+  function paintDD(q) {
+    const query = norm(q.trim());
+    const items = (query ? allInds.filter(i => norm(i.name).includes(query)) : allInds).slice(0, 93);
+    clearBtn.style.display = q.trim() ? 'block' : 'none';
+    if (!items.length) { dd.innerHTML = `<div class="dd-empty">Sin coincidencias — prueba con otra palabra</div>`; return; }
+    dd.innerHTML = items.map(i => `<div class="dd-item" data-name="${esc(i.name)}"><span>${esc(i.name)}</span><small>${esc(i.pillar)}</small></div>`).join('');
+  }
+  function openDD() { paintDD(inp.value); dd.classList.add('open'); }
+  function closeDD() { dd.classList.remove('open'); }
+
+  inp.addEventListener('focus', openDD);
+  inp.addEventListener('input', () => { state.q = inp.value; openDD(); syncIndBadge(); render(); });
+  inp.addEventListener('keydown', e => { if (e.key === 'Escape') { closeDD(); inp.blur(); } });
+  dd.addEventListener('mousedown', e => {
+    const it = e.target.closest('.dd-item'); if (!it) return;
+    e.preventDefault();
+    inp.value = it.dataset.name; state.q = it.dataset.name; closeDD(); syncIndBadge(); render();
+  });
+  clearBtn.addEventListener('click', () => { inp.value = ''; state.q = ''; paintDD(''); inp.focus(); syncIndBadge(); render(); });
+  document.addEventListener('click', e => { if (!sw.contains(e.target)) closeDD(); });
+
+  sw.append(inp, clearBtn, dd);
+  colS.appendChild(sw); row.appendChild(colS);
+
+  panel.appendChild(row);
+  box.appendChild(panel);
+  el('ind-clear').onclick = clearIndFilters;
 }
+function syncIndBadge() {
+  const cnt = el('ind-filters').querySelector('.cnt');
+  const n = state.years.size + (state.q.trim() ? 1 : 0);
+  if (cnt) { cnt.style.display = n ? 'inline-block' : 'none'; cnt.textContent = n; }
+}
+
 
 function syncBadges() {
   const set = (k, n) => { const b = document.querySelector(`[data-badge="${k}"]`); if (b) { b.style.display = n ? 'inline-block' : 'none'; b.textContent = n; } };
-  set('factors', state.factors.size); set('pillars', state.pillars.size); set('years', state.years.size); set('q', state.q.trim() ? 1 : 0);
+  set('factors', state.factors.size); set('pillars', state.pillars.size);
 }
 
 /* ---------------- render general ---------------- */
